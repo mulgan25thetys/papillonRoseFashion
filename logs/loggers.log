@@ -1,0 +1,21 @@
+2022-12-21 23:45:54 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Bad credentials
+2022-12-22 00:42:20 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Bad credentials
+2022-12-23 15:17:11 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 15:17:54 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 15:17:56 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 15:21:11 prf.services.FileStorageServicesImpl.load(FileStorageServicesImpl.java:53):53 - Could not read the file! :default-profile.jpg
+2022-12-23 16:09:46 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 16:12:07 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 16:13:20 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 17:27:30 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 17:29:40 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 17:58:23 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Bad credentials
+2022-12-23 18:07:14 prf.controllers.AuthController.confirmation(AuthController.java:283):283 - java.lang.IllegalArgumentException: JWT String argument cannot be null or empty.
+2022-12-23 18:39:57 prf.services.NotificationServicesImpl.sendMailWithCode(NotificationServicesImpl.java:72):72 - javax.mail.internet.AddressException: Local address starts with dot in string ``.ngougbiamayele@esprit.tn''
+2022-12-23 20:42:56 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 20:48:42 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 20:57:27 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 20:58:40 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 21:19:46 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 22:01:49 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2022-12-23 22:02:49 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
