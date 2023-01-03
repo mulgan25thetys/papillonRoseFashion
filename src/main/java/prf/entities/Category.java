@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.Proxy;
 
@@ -39,6 +40,7 @@ public class Category implements Serializable{/**
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@NotBlank
 	private String name;
 	private Boolean isPremium;
 	@Temporal(TemporalType.TIMESTAMP)

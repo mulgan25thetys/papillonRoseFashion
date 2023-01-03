@@ -19,3 +19,11 @@
 2022-12-23 21:19:46 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
 2022-12-23 22:01:49 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
 2022-12-23 22:02:49 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2023-01-03 01:44:28 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2023-01-03 02:07:59 prf.controllers.CategoryController.addCategory(CategoryController.java:69):69 - javax.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'javax.validation.constraints.NotBlank' validating type 'java.lang.Boolean'. Check configuration for 'isPremium'
+2023-01-03 02:09:07 prf.controllers.CategoryController.addCategory(CategoryController.java:69):69 - javax.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'javax.validation.constraints.NotBlank' validating type 'java.lang.Boolean'. Check configuration for 'isPremium'
+2023-01-03 02:09:33 prf.controllers.CategoryController.addCategory(CategoryController.java:69):69 - javax.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'javax.validation.constraints.NotBlank' validating type 'java.lang.Boolean'. Check configuration for 'isPremium'
+2023-01-03 02:24:28 prf.controllers.CategoryController.addCategory(CategoryController.java:69):69 - javax.validation.ConstraintViolationException: Validation failed for classes [prf.entities.Category] during persist time for groups [javax.validation.groups.Default, ]
+List of constraint violations:[
+	ConstraintViolationImpl{interpolatedMessage='must not be blank', propertyPath=name, rootBeanClass=class prf.entities.Category, messageTemplate='{javax.validation.constraints.NotBlank.message}'}
+]
