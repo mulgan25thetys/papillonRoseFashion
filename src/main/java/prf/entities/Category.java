@@ -17,6 +17,8 @@ import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.Proxy;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,6 +50,7 @@ public class Category implements Serializable{/**
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "category",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private List<Post> posts;
 

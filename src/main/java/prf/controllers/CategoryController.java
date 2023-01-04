@@ -71,11 +71,12 @@ public class CategoryController {
             HttpServletRequest request, HttpServletResponse response,@RequestBody Category category)
 	{
 		Boolean success=false;
-		if(Boolean.TRUE.equals(cateRepo.existsByName(category.getName()))) {
-			return ResponseEntity.badRequest().body(new MessageResponse(error4ExistingCategoryMessage));
-		}
 		
 		try {
+			if(Boolean.TRUE.equals(cateRepo.existsByName(category.getName()))) {
+				return ResponseEntity.badRequest().body(new MessageResponse(error4ExistingCategoryMessage));
+			}
+			
 			cateServe.addCategory(category);
 			success=true;
 		} catch (Exception e) {

@@ -65,7 +65,7 @@ public class FileController {
 	  public ResponseEntity<Resource> getFile(@PathVariable String filename) {
 	    Resource file = storageService.load(filename);
 	    return ResponseEntity.ok()
-	        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+	        .header(HttpHeaders.CONTENT_DISPOSITION, "attachments; filename=\"" + file.getFilename() + "\"").body(file);
 	  }
 	  
 	  @PreAuthorize("hasAnyRole('ROLE_CLIENT','ROLE_AGENT','ROLE_ADMIN')")
@@ -78,7 +78,21 @@ public class FileController {
 		    
 		    return ResponseEntity.ok()
 	              .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(path))
-	              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+	              .header(HttpHeaders.CONTENT_DISPOSITION, "attachments profiles; filename=\"" + file.getFilename() + "\"")
+	              .body(file);
+		  }
+	  
+	  @PreAuthorize("hasAnyRole('ROLE_CLIENT','ROLE_AGENT','ROLE_ADMIN')")
+	  @GetMapping("/posts/{filename:.+}")
+		@ResponseBody
+		public ResponseEntity<Resource> getFileForPosts(@PathVariable String filename) throws IOException {
+		    Resource file = storageService.loadPostFiles(filename);
+		    Path path = file.getFile()
+	              .toPath();
+		    
+		    return ResponseEntity.ok()
+	              .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(path))
+	              .header(HttpHeaders.CONTENT_DISPOSITION, "attachments posts; filename=\"" + file.getFilename() + "\"")
 	              .body(file);
 		  }
 }

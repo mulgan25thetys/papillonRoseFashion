@@ -83,7 +83,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/joints/**").permitAll()
 			.antMatchers("/categories/**").permitAll()
 			.antMatchers("/posts/**").permitAll()
-			.antMatchers("/network-shares/**").permitAll()
 			.anyRequest().authenticated().and() 
 		      .formLogin() 
 		      .and() 

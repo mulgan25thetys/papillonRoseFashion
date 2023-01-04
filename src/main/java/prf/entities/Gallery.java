@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Proxy;
 
@@ -41,6 +42,8 @@ public class Gallery implements Serializable{/**
 	private Long id;
 	@Column(length = 1000)
 	private String name;
+	@Transient
+	private String url;
 	private Boolean isDefault;
 	private Boolean hasShowed;
 	@Temporal(TemporalType.TIMESTAMP)

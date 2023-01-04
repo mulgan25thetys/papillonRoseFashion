@@ -19,8 +19,10 @@ public class FileStorageServicesImpl implements IFileStorageServices{
 
 	private static final Logger log = Logger.getLogger(FileStorageServicesImpl.class);
 	
+	private String messageError4ReadingFile = "Could not read the file!";
 	private final Path root = Paths.get("src/main/resources/uploads");
 	private final Path rootProfiles = Paths.get("src/main/resources/uploads/profiles");
+	private final Path rootPosts = Paths.get("src/main/resources/uploads/posts");
 	
 	  @Override
 	  public void init() {
@@ -50,7 +52,7 @@ public class FileStorageServicesImpl implements IFileStorageServices{
 	      if (resource.exists() || resource.isReadable()) {
 	        return resource;
 	      } else {
-	    	  log.info("Could not read the file! :"+filename);
+	    	  log.info(messageError4ReadingFile+" :"+filename);
 	    	 return null;
 	      }
 	    } catch (MalformedURLException e) {
@@ -69,7 +71,7 @@ public class FileStorageServicesImpl implements IFileStorageServices{
 	      if (resource.exists() || resource.isReadable()) {
 	        return resource;
 	      } else {
-	    	  log.info("Could not read the file!");
+	    	  log.info(messageError4ReadingFile);
 		    return new UrlResource(root.resolve("default-profile.jpg").toUri());
 	      }
 	    } catch (MalformedURLException e) {
@@ -89,8 +91,26 @@ public class FileStorageServicesImpl implements IFileStorageServices{
 	    try {
 	      return Files.walk(this.root, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize);
 	    } catch (IOException e) {
-	    	log.info("Could not read the file!");
+	    	log.info(messageError4ReadingFile);
 	    	return null;
 	    }
 	  }
+
+	@Override
+	public Resource loadPostFiles(String filename) {
+		try {
+	    	Path file =  rootPosts.resolve(filename);
+	 
+	      Resource resource = new UrlResource(file.toUri());
+	      if (resource.exists() || resource.isReadable()) {
+	        return resource;
+	      } else {
+	    	  log.info(messageError4ReadingFile);
+		    return null;
+	      }
+	    } catch (MalformedURLException e) {
+	    	log.debug("Error: " + e.getMessage());
+	    	return null;
+	    }
+	}
 }

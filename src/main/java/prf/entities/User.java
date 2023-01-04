@@ -21,6 +21,8 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Proxy;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -81,6 +83,7 @@ public class User implements Serializable{
 	@ManyToOne
 	private Role role;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "author",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private List<Post> posts;
 	

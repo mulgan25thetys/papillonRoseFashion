@@ -11,15 +11,13 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.Proxy;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -44,8 +42,10 @@ public class Post implements Serializable{/**
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@NotBlank
 	private String title;
 	@Column(length = 100000)
+	@NotBlank
 	private String content;
 	@Column(length = 1000)
 	private String slug;
@@ -61,20 +61,15 @@ public class Post implements Serializable{/**
 	private Date addedAt;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
-	
-	@JsonIgnore
+
 	@ManyToOne
 	private User author;
 	
-	@JsonIgnore
 	@ManyToOne
 	private Category category;
 	
 	@OneToMany(mappedBy = "post",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private List<Gallery> galleries;
-	
-	@ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.DETACH)
-	private List<NetworkShare> networkShares;
 
 	public Post() {
 		super();

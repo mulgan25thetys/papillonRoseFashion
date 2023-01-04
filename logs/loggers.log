@@ -27,3 +27,14 @@
 List of constraint violations:[
 	ConstraintViolationImpl{interpolatedMessage='must not be blank', propertyPath=name, rootBeanClass=class prf.entities.Category, messageTemplate='{javax.validation.constraints.NotBlank.message}'}
 ]
+2023-01-03 22:45:38 prf.controllers.CategoryController.addCategory(CategoryController.java:83):83 - org.springframework.orm.jpa.JpaSystemException: could not extract ResultSet; nested exception is org.hibernate.exception.GenericJDBCException: could not extract ResultSet
+2023-01-03 23:32:25 prf.controllers.PostController.addPost(PostController.java:87):87 - javax.validation.UnexpectedTypeException: HV000030: No validator could be found for constraint 'javax.validation.constraints.NotBlank' validating type 'java.lang.Boolean'. Check configuration for 'isPremium'
+2023-01-04 00:18:39 prf.controllers.PostController.addPost(PostController.java:87):87 - org.springframework.orm.jpa.JpaSystemException: could not extract ResultSet; nested exception is org.hibernate.exception.GenericJDBCException: could not extract ResultSet
+2023-01-04 01:57:06 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2023-01-04 01:57:38 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2023-01-04 02:02:40 prf.controllers.PostController.findAll(PostController.java:87):87 - java.lang.IllegalArgumentException: No method named 'getFileForProfiles' with 1 arguments found in controller prf.controllers.FileController
+2023-01-04 02:12:57 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2023-01-04 02:31:39 prf.services.PostServicesImpl.deletePost(PostServicesImpl.java:185):185 - java.io.IOException: Cannot run program "rm": CreateProcess error=2, The system cannot find the file specified
+2023-01-04 02:31:39 prf.controllers.PostController.deletePost(PostController.java:196):196 - java.lang.NullPointerException: Cannot invoke "java.lang.Process.waitFor()" because "process" is null
+2023-01-04 02:34:08 prf.services.PostServicesImpl.deletePost(PostServicesImpl.java:186):186 - java.io.IOException: Cannot run program "rm": CreateProcess error=2, The system cannot find the file specified
+2023-01-04 02:34:08 prf.controllers.PostController.deletePost(PostController.java:196):196 - java.lang.NullPointerException: Cannot invoke "java.lang.Process.waitFor()" because "process" is null
