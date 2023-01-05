@@ -38,3 +38,13 @@ List of constraint violations:[
 2023-01-04 02:31:39 prf.controllers.PostController.deletePost(PostController.java:196):196 - java.lang.NullPointerException: Cannot invoke "java.lang.Process.waitFor()" because "process" is null
 2023-01-04 02:34:08 prf.services.PostServicesImpl.deletePost(PostServicesImpl.java:186):186 - java.io.IOException: Cannot run program "rm": CreateProcess error=2, The system cannot find the file specified
 2023-01-04 02:34:08 prf.controllers.PostController.deletePost(PostController.java:196):196 - java.lang.NullPointerException: Cannot invoke "java.lang.Process.waitFor()" because "process" is null
+2023-01-04 03:51:04 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2023-01-04 03:52:39 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Bad credentials
+2023-01-04 03:53:00 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Bad credentials
+2023-01-04 06:09:15 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2023-01-04 18:48:57 prf.controllers.PostController.addPost(PostController.java:117):117 - java.lang.NullPointerException: Cannot invoke "String.trim()" because the return value of "prf.entities.Post.getTitle()" is null
+2023-01-04 20:23:45 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2023-01-04 20:41:21 prf.controllers.PostController.likesPost(PostController.java:245):245 - org.springframework.dao.DataIntegrityViolationException: could not execute statement; SQL [n/a]; nested exception is org.hibernate.exception.DataException: could not execute statement
+2023-01-04 20:41:43 prf.controllers.PostController.likesPost(PostController.java:245):245 - org.springframework.dao.DataIntegrityViolationException: could not execute statement; SQL [n/a]; nested exception is org.hibernate.exception.DataException: could not execute statement
+2023-01-04 22:34:55 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource
+2023-01-05 01:10:50 prf.security.jwt.AuthEntryPointJwt.commence(AuthEntryPointJwt.java:18):18 - Unauthorized error: {} Full authentication is required to access this resource

@@ -15,9 +15,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.Proxy;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -52,8 +55,11 @@ public class Post implements Serializable{/**
 	private Boolean isPublished;
 	private Boolean isDownloaded;
 	private Boolean isShared;
+	@Transient
 	private Integer views;
+	@Transient
 	private Integer likes;
+	@Transient
 	private Integer unlikes;
 	private Integer numberShares;
 	private Boolean isPremium;
@@ -70,6 +76,18 @@ public class Post implements Serializable{/**
 	
 	@OneToMany(mappedBy = "post",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private List<Gallery> galleries;
+	
+	@OneToMany(mappedBy = "post",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	private List<Comments> comments;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "myPost",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	private List<LikesPost> myLikes;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "myPost",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	private List<ViewsPost> myViews;
+	
 
 	public Post() {
 		super();

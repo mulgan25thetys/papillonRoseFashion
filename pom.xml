@@ -122,6 +122,11 @@
 	      <artifactId>thymeleaf-spring4</artifactId>
 	      <version>2.1.5.RELEASE</version>
 	   </dependency>
+	   
+	   <dependency>
+   				 <groupId>org.springframework.security</groupId>
+    				<artifactId>spring-security-oauth2-core</artifactId>
+			</dependency>
 
 		   <dependency>
 		      <groupId>org.thymeleaf</groupId>
@@ -174,6 +179,7 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 			</dependency>
+			
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-devtools</artifactId>

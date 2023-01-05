@@ -22,14 +22,20 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import prf.controllers.FileController;
 import prf.entities.Category;
+import prf.entities.Comments;
 import prf.entities.ERole;
 import prf.entities.Gallery;
+import prf.entities.LikesPost;
 import prf.entities.Post;
 import prf.entities.User;
+import prf.entities.ViewsPost;
 import prf.repositories.CategoryRepository;
+import prf.repositories.CommentsRepository;
 import prf.repositories.GalleryRepository;
+import prf.repositories.LikesPostRepository;
 import prf.repositories.PostRepository;
 import prf.repositories.UserRepository;
+import prf.repositories.ViewsPostRepository;
 
 @Service
 public class PostServicesImpl implements IPostServices {
@@ -49,17 +55,33 @@ public class PostServicesImpl implements IPostServices {
 	@Autowired
 	UserRepository userRepo;
 	
+	@Autowired
+	LikesPostRepository likesRepo;
+	
+	@Autowired
+	ViewsPostRepository viewRepo;
+	
+	@Autowired
+	CommentsRepository commentRepo;
+	
+	//Add post 
 	@Transactional
-	public Integer addPost(Post post,Long idCategory, Long idAuthor) {
+	public Integer addPost(Post post,Long idCategory,User author) {
 		Optional<Category> cateOptional = cateRepo.findById(idCategory);
-		Optional<User> userOptional = userRepo.findById(idAuthor);
 		
-		if(cateOptional.isPresent() && userOptional.isPresent() && !userOptional.get().getRole().getName().equals(ERole.ROLE_CLIENT)) {
-			User author = userOptional.get();
+		if(cateOptional.isPresent() && !author.getRole().getName().equals(ERole.ROLE_CLIENT)) {
 			Category category = cateOptional.get();
 			
 			if(post.getIsPremium() == null) {
 				post.setIsPremium(false);
+			}
+			
+			if(post.getIsDownloaded() == null) {
+				post.setIsDownloaded(false);
+			}
+			
+			if(post.getIsShared() == null) {
+				post.setIsShared(false);
 			}
 			
 			if(post.getIsPublished() == null) {
@@ -69,6 +91,7 @@ public class PostServicesImpl implements IPostServices {
 			post.setAuthor(author);
 			post.setCategory(category);
 			post.setSlug(post.getTitle().trim().replace(' ', '-') );
+			post.setNumberShares(0);
 			post.setAddedAt(new Date());
 			
 			postRepo.save(post);
@@ -78,6 +101,7 @@ public class PostServicesImpl implements IPostServices {
 		return -1;
 	}
 
+	//add Images Galleries to a post
 	@Override
 	public Integer addPostImages(MultipartFile[] files, Long idPost) {
 		Optional<Post> postOptional = postRepo.findById(idPost);
@@ -128,6 +152,7 @@ public class PostServicesImpl implements IPostServices {
 		return -1;
 	}
 	
+	//Edit post
 	@Transactional
 	public Post editPost(Post post) {
 		
@@ -148,6 +173,7 @@ public class PostServicesImpl implements IPostServices {
 		return updatedPost;
 	}
 
+	//get Post by Id
 	@Override
 	public Post getPost(Long id) {
 		Optional<Post> postOptional = postRepo.findById(id);
@@ -159,10 +185,24 @@ public class PostServicesImpl implements IPostServices {
 						          .fromMethodName(FileController.class, "getFileForPosts", gallery.getName()).build().toString();
 						gallery.setUrl(url);
 					}
+					String url = MvcUriComponentsBuilder
+					          .fromMethodName(FileController.class, "getFileForProfile", post.getAuthor().getProfile()).build().toString();
+					post.getAuthor().setProfileUrl(url);
+					
+					for(Comments comment : post.getComments()) {
+						String urlc = MvcUriComponentsBuilder
+						          .fromMethodName(FileController.class, "getFileForProfile", comment.getAuthor().getProfile()).build().toString();
+						comment.getAuthor().setProfileUrl(urlc);
+					}
+					post.setViews(viewRepo.getNbrViewsByPost(post.getId()));
+					post.setUnlikes(likesRepo.getNbrUnLikesByPost(post.getId()));
+					post.setLikes(likesRepo.getNbrLikesByPost(post.getId()));
 			return post;
 		}
 		return postOptional.orElse(null);
 	}
+	
+	//Delete Post
 
 	@Transactional
 	public Integer deletePost(Long id) {
@@ -188,8 +228,94 @@ public class PostServicesImpl implements IPostServices {
 		return -1;
 	}
 
+	//Find All posts with pagination
 	@Override
 	public Page<Post> findAllPaging(Pageable pageable) {
 		return postRepo.findAll(pageable);
+	}
+
+	@Override
+	public void likesPost(Long idPost, int value,User author) {
+		Post post = this.getPost(idPost);
+		LikesPost like = new LikesPost();
+		List<LikesPost> likesPosts = likesRepo.getLikedPostByUser(author.getId(),idPost);
+		List<LikesPost> unLikesPosts = likesRepo.getUnLikedPostByUser(author.getId(),idPost);
+		
+		Boolean success=false;
+		switch (value) {
+		case 1:
+			
+			if(Boolean.FALSE.equals(unLikesPosts.isEmpty())) {
+				this.updateLikesPost(author.getId(), idPost, true);
+
+			}
+			else if(Boolean.TRUE.equals(likesPosts.isEmpty()) && post!=null) {
+				like.setHasLiked(true);
+				success=true;
+			}
+			break;
+		case 0:
+			if(Boolean.FALSE.equals(likesPosts.isEmpty())) {
+				this.updateLikesPost(author.getId(), idPost, false);
+			}
+			else if(Boolean.TRUE.equals(unLikesPosts.isEmpty()) && post!=null) {
+				like.setHasLiked(false);
+				success=true;
+			}
+			break;
+		default:
+			break;
+		}
+		
+		if(Boolean.TRUE.equals(success)) {
+			like.setLikesAt(new Date());
+			like.setMyPost(post);
+			like.setMyAuthor(author);
+			likesRepo.save(like);
+		}
+	}
+	
+	private void updateLikesPost(Long idAuthor,Long idPost,Boolean value) {
+		Optional<LikesPost> likeOptional = likesRepo.getLikesByPost(idAuthor, idPost);
+		if(likeOptional.isPresent()) {
+			LikesPost like = likeOptional.get();
+			like.setHasLiked(value);
+			like.setLikesAt(new Date());
+			likesRepo.save(like);
+		}
+	}
+	
+	//View Post and update database
+
+	@Override
+	public Post viewsPost(Long idPost, User author) {
+		Optional<ViewsPost> viewsOptional = viewRepo.getViewsForPostByUser(author.getId(), idPost);
+		Post post = this.getPost(idPost);
+		ViewsPost view = new ViewsPost();
+		
+		if(Boolean.FALSE.equals(viewsOptional.isPresent())) {
+			
+			view.setMyAuthor(author);
+			view.setMyPost(post);
+		}
+		else {
+			view = viewsOptional.get();
+		}
+	
+		view.setViewAt(new Date());
+		viewRepo.save(view);
+		
+		post.setViews(viewRepo.getNbrViewsByPost(post.getId()));
+		return post;
+	}
+
+	@Override
+	public Comments commentPost(Long idPost, User author, Comments comment) {
+		Post post = this.getPost(idPost);
+		
+		comment.setAuthor(author);
+		comment.setPost(post);
+		comment.setCommentAt(new Date());
+		return commentRepo.save(comment);
 	}
 }

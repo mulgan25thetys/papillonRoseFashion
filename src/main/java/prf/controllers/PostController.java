@@ -22,14 +22,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import prf.entities.Comments;
 import prf.entities.Gallery;
 import prf.entities.Post;
 import prf.payload.response.MessageResponse;
 import prf.repositories.CategoryRepository;
 import prf.repositories.GalleryRepository;
+import prf.repositories.LikesPostRepository;
 import prf.repositories.PostRepository;
 import prf.repositories.UserRepository;
+import prf.repositories.ViewsPostRepository;
 import prf.services.IPostServices;
+import prf.services.IUserServices;
 
 @RestController
 @RequestMapping("posts")
@@ -42,6 +46,7 @@ public class PostController {
 	private String genericMessageError4ExistingPost = "Cette publication exist déja!";
 	private String genericMessageError4NonExistingPost = "Cette publication n'exist pas!";
 	private String genericMessageError4Missing = "Cette requeste est incomplete";
+	private String genericMessage4NotLogin = "Veuillez vous connecter pour continuer!";
 			
 	@Autowired
 	CategoryRepository cateRepo;
@@ -58,12 +63,47 @@ public class PostController {
 	@Autowired
 	IPostServices postServe;
 	
+	@Autowired
+	IUserServices userServe;
+	
+	@Autowired
+	LikesPostRepository likesRepo;
+	
+	@Autowired
+	ViewsPostRepository viewRepo;
+	
 	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
 	@GetMapping("/find-all-paging")
 	@ResponseBody
 	public Page<Post> findAllPaging(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
 		Pageable paging = PageRequest.of(page, size);
-		return postServe.findAllPaging(paging);
+		Page<Post> listPosts = postServe.findAllPaging(paging);
+		try {
+			for (Post postP : listPosts.getContent()) {
+				for (Gallery gallery : postP.getGalleries()) {
+					String urlg = MvcUriComponentsBuilder
+					          .fromMethodName(FileController.class, "getFileForPosts", gallery.getName()).build().toString();
+					gallery.setUrl(urlg);
+				}
+				
+				String urlp = MvcUriComponentsBuilder
+				          .fromMethodName(FileController.class, "getFileForProfile", postP.getAuthor().getProfile()).build().toString();
+				postP.getAuthor().setProfileUrl(urlp);
+				
+				for(Comments comment : postP.getComments()) {
+					String urlc = MvcUriComponentsBuilder
+					          .fromMethodName(FileController.class, "getFileForProfile", comment.getAuthor().getProfile()).build().toString();
+					comment.getAuthor().setProfileUrl(urlc);
+				}
+				
+				postP.setViews(viewRepo.getNbrViewsByPost(postP.getId()));
+				postP.setUnlikes(likesRepo.getNbrUnLikesByPost(postP.getId()));
+				postP.setLikes(likesRepo.getNbrLikesByPost(postP.getId()));
+			}
+		} catch (Exception e) {
+			log.debug(e);
+		}
+		return listPosts;
 	}
 
 	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
@@ -81,7 +121,17 @@ public class PostController {
 				
 				String url = MvcUriComponentsBuilder
 				          .fromMethodName(FileController.class, "getFileForProfile", post.getAuthor().getProfile()).build().toString();
-				post.getAuthor().setProfile(url);
+				post.getAuthor().setProfileUrl(url);
+				
+				for(Comments comment : post.getComments()) {
+					String urlc = MvcUriComponentsBuilder
+					          .fromMethodName(FileController.class, "getFileForProfile", comment.getAuthor().getProfile()).build().toString();
+					comment.getAuthor().setProfileUrl(urlc);
+				}
+				
+				post.setViews(viewRepo.getNbrViewsByPost(post.getId()));
+				post.setUnlikes(likesRepo.getNbrUnLikesByPost(post.getId()));
+				post.setLikes(likesRepo.getNbrLikesByPost(post.getId()));
 			}
 		} catch (Exception e) {
 			log.debug(e);
@@ -91,18 +141,21 @@ public class PostController {
 	
 	@SuppressWarnings("all")
 	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN')")
-	@PostMapping("add-post/{idCategory}/{idAuthor}")
+	@PostMapping("add-post/{idCategory}")
 	@ResponseBody
-	public ResponseEntity<Object> addPost(@RequestBody Post post,@PathVariable("idCategory") Long idCategory,
-			@PathVariable("idAuthor") Long idAuthor){
+	public ResponseEntity<Object> addPost(@RequestBody Post post,@PathVariable("idCategory") Long idCategory){
 		Boolean success = false;
 		try {
 			if(Boolean.TRUE.equals(postRepo.existsByTitle(post.getTitle()))) {
 				return ResponseEntity.badRequest().body(new MessageResponse(genericMessageError4ExistingPost));
 			}
 			
-			if(postServe.addPost(post, idCategory, idAuthor) == 0) {
-				success=true;
+			if(userServe.getAuthenticatedUSer() != null) {
+				if(postServe.addPost(post, idCategory, userServe.getAuthenticatedUSer()) == 0) {
+					success=true;
+				}
+			}else {
+				return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4NotLogin));
 			}
 			
 		} catch (Exception e) {
@@ -176,10 +229,12 @@ public class PostController {
 			if(Boolean.FALSE.equals(postRepo.existsById(id))) {
 				return ResponseEntity.badRequest().body(new MessageResponse(genericMessageError4NonExistingPost));
 			}
+			
+			return ResponseEntity.ok().body(postServe.getPost(id));
 		} catch (Exception e) {
 			log.debug(e);
 		}
-		return ResponseEntity.ok().body(postServe.getPost(id));
+		return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4Error));
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN')")
@@ -202,5 +257,68 @@ public class PostController {
 		}else {
 			return ResponseEntity.ok().body(new MessageResponse(success4Message));
 		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
+	@PostMapping("likes")
+	@ResponseBody
+	public ResponseEntity<Object> likesPost(@RequestParam("id") Long id,@RequestParam("liked") int value){
+		Boolean success=false;
+		try {
+			if(userServe.getAuthenticatedUSer() != null) {
+				postServe.likesPost(id, value, userServe.getAuthenticatedUSer());
+				success=true;
+				
+			}else {
+				return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4NotLogin));
+			}
+		} catch (Exception e) {
+			log.debug(e);
+		}
+		if(Boolean.FALSE.equals(success)) {
+			return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4Error));
+		}else {
+			return ResponseEntity.ok().body(new MessageResponse(success4Message));
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
+	@GetMapping("views")
+	@ResponseBody
+	public ResponseEntity<Object> viewsPost(@RequestParam("id") Long id){
+		
+		try {
+			if(userServe.getAuthenticatedUSer() != null) {
+				return ResponseEntity.ok().body(postServe.viewsPost(id, userServe.getAuthenticatedUSer()));
+			}else {
+				return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4NotLogin));
+			}
+		} catch (Exception e) {
+			log.debug(e);
+		}
+		
+		return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4Error));
+		
+	}
+	
+	@SuppressWarnings("all")
+	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
+	@PostMapping("comment/{postid}")
+	@ResponseBody
+	public ResponseEntity<Object> viewsPost(@PathVariable("postid") Long id,@RequestBody Comments comment){
+		
+		try {
+			if(userServe.getAuthenticatedUSer() != null) {
+				return ResponseEntity.ok().body(postServe.commentPost(id,
+						userServe.getAuthenticatedUSer(), comment));
+			}else {
+				return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4NotLogin));
+			}
+		} catch (Exception e) {
+			log.debug(e);
+		}
+		
+		return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4Error));
+		
 	}
 }

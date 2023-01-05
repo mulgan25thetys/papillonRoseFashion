@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import prf.controllers.FileController;
 import prf.entities.User;
 import prf.repositories.UserRepository;
+import prf.security.services.UserDetailsImpl;
 
 @Service
 public class UserServicesImpl implements IUserServices{
@@ -44,6 +47,19 @@ public class UserServicesImpl implements IUserServices{
 	@Autowired
 	PasswordEncoder encoder;
 	
+	@Override
+	public User getAuthenticatedUSer() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		if(auth.isAuthenticated()) {
+			
+			Optional<User> userOptional = userRepository.findById(((UserDetailsImpl)auth.getPrincipal()).getId());
+			if(userOptional.isPresent()) {
+				return userOptional.get();
+			}
+		}
+		return null;
+	}
 
 	@Transactional
 	public User addUser(User user) {

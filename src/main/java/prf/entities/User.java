@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -47,18 +49,24 @@ public class User implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@Column(unique = true)
 	private Long uniqueId;
 	@NotBlank
+	@Column(unique = true)
 	private String username;
 	private String firstname;
 	private String lastname;
 	@NotBlank
 	@Size(max = 50)
 	@Email
+	@Column(unique = true)
 	private String email;
 	@Size(max = 200)
 	private String password;
+	@Column(length = 1000)
 	private String profile;
+	@Transient
+	private String profileUrl;
 	private Integer phone;
 	private String country;
 	private String city;
@@ -86,6 +94,14 @@ public class User implements Serializable{
 	@JsonIgnore
 	@OneToMany(mappedBy = "author",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private List<Post> posts;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "myAuthor",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	private List<LikesPost> myLikes;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "myAuthor",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	private List<ViewsPost> myViews;
 	
 	public User() {
 	}

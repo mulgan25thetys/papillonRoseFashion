@@ -9,6 +9,8 @@ import prf.entities.User;
 
 public interface IUserServices {
 
+	User getAuthenticatedUSer();
+	
 	User editUser(User user);
 	
 	User editProfile(MultipartFile profile,Long idUser);
