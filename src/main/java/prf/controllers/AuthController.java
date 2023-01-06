@@ -29,9 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import prf.entities.ERole;
@@ -79,16 +77,7 @@ public class AuthController{
 	INotificationServices notificationService;
 	
 	@PostMapping("/login")
-	public ResponseEntity<Object> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,HttpServletResponse httpResponse
-			,@RequestParam(value = "error",required = false) String error,
-			@RequestParam(value = "logout",	required = false) String logout) {
-		ModelAndView model = new ModelAndView();
-		
-		if (logout != null) {
-			model.addObject("message", "Logged out from JournalDEV successfully.");
-			return ResponseEntity.ok().body(new MessageResponse("Logged out from JournalDEV successfully."));
-		}
-		
+	public ResponseEntity<Object> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,HttpServletResponse httpResponse) {
 		
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));

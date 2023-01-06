@@ -59,7 +59,7 @@ public class FileController {
 	    return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
 	  }
 
-	@PreAuthorize("hasAnyRole('ROLE_CLIENT','ROLE_AGENT','ROLE_ADMIN')")
+	//@PreAuthorize("hasAnyRole('ROLE_CLIENT','ROLE_AGENT','ROLE_ADMIN')")
 	  @GetMapping("/files/{filename:.+}")
 	  @ResponseBody
 	  public ResponseEntity<Resource> getFile(@PathVariable String filename) {
@@ -68,7 +68,7 @@ public class FileController {
 	        .header(HttpHeaders.CONTENT_DISPOSITION, "attachments; filename=\"" + file.getFilename() + "\"").body(file);
 	  }
 	  
-	  @PreAuthorize("hasAnyRole('ROLE_CLIENT','ROLE_AGENT','ROLE_ADMIN')")
+	  //@PreAuthorize("hasAnyRole('ROLE_CLIENT','ROLE_AGENT','ROLE_ADMIN')")
 	  @GetMapping("/profiles/{filename:.+}")
 		@ResponseBody
 		public ResponseEntity<Resource> getFileForProfile(@PathVariable String filename) throws IOException {
@@ -82,7 +82,7 @@ public class FileController {
 	              .body(file);
 		  }
 	  
-	  @PreAuthorize("hasAnyRole('ROLE_CLIENT','ROLE_AGENT','ROLE_ADMIN')")
+	  //@PreAuthorize("hasAnyRole('ROLE_CLIENT','ROLE_AGENT','ROLE_ADMIN')")
 	  @GetMapping("/posts/{filename:.+}")
 		@ResponseBody
 		public ResponseEntity<Resource> getFileForPosts(@PathVariable String filename) throws IOException {
