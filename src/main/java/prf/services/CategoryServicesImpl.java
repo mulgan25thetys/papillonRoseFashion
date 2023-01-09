@@ -3,6 +3,8 @@ package prf.services;
 import java.util.Date;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +44,7 @@ public class CategoryServicesImpl implements ICategoryServices{
 		return categoryOptional.orElse(null);
 	}
 
-	@Override
+	@Transactional
 	public Integer deleteCategory(Long id) {
 		Optional<Category> categoryOptional = catRepo.findById(id);
 		

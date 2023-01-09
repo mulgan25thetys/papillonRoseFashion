@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,16 +31,22 @@ import prf.services.ICategoryServices;
 import prf.entities.Category;
 import prf.payload.response.MessageResponse;
 
+@CrossOrigin
 @RestController
 @RequestMapping("categories")
 public class CategoryController {
 
 	private static final Logger log = Logger.getLogger(CategoryController.class);
 	
-	private String success4GenericMessage = "L'opération a été bien éffectuée!";
-	private String error4GenericMessage = "Une Erreur s'est produite veuillez ressayer!";
-	private String error4ExistingCategoryMessage = "Cette categorie de publication exist déja!";
-	private String error4NonExistingCategoryMessage = "Cette categorie de publication n'exist pas!";
+	private String success4GenericMessage = "The operation was well done!";
+	private String error4GenericMessage = "An Error has occurred please try again!";
+	private String error4ExistingCategoryMessage = "This category of publication already exists!";
+	private String error4NonExistingCategoryMessage = "This category of publication does not exist!";
+	
+	private String addingTitle = "Adding a category";
+	//private String gettingTitle = "Getting a category";
+	private String editingTitle = "Editing a category";
+	//private String deletingTitle = "Deleting a category";
 	
 	@Autowired
 	CategoryRepository cateRepo;
@@ -74,7 +81,7 @@ public class CategoryController {
 		
 		try {
 			if(Boolean.TRUE.equals(cateRepo.existsByName(category.getName()))) {
-				return ResponseEntity.badRequest().body(new MessageResponse(error4ExistingCategoryMessage));
+				return ResponseEntity.badRequest().body(new MessageResponse(addingTitle,error4ExistingCategoryMessage));
 			}
 			
 			cateServe.addCategory(category);
@@ -84,9 +91,9 @@ public class CategoryController {
 		}
 		
 		if(Boolean.FALSE.equals(success)) {
-			return ResponseEntity.badRequest().body(new MessageResponse(error4GenericMessage));
+			return ResponseEntity.badRequest().body(new MessageResponse(addingTitle,error4GenericMessage));
 		}else {
-			return ResponseEntity.ok().body(new MessageResponse("Une categorie de publication a été ajoutée!"));
+			return ResponseEntity.ok().body(new MessageResponse(addingTitle,"Une categorie de publication a été ajoutée!"));
 		}	
 	}
 	
@@ -98,13 +105,13 @@ public class CategoryController {
 	{
 		Boolean success=false;
 		if(category.getId() == null) {
-			return ResponseEntity.badRequest().body(new MessageResponse(error4GenericMessage));
+			return ResponseEntity.badRequest().body(new MessageResponse(editingTitle,error4GenericMessage));
 		}
 		
 		if(Boolean.TRUE.equals(cateRepo.existsByName(category.getName()))) {
 			Optional<Category> categoryOption = cateRepo.findByName(category.getName());
 			if(categoryOption.isPresent() && !categoryOption.get().getId().equals(category.getId())) {
-				return ResponseEntity.badRequest().body(new MessageResponse(error4ExistingCategoryMessage+" avec ce nom!"));
+				return ResponseEntity.badRequest().body(new MessageResponse(editingTitle,error4ExistingCategoryMessage+" with this name!"));
 			}
 		}
 		
@@ -116,9 +123,9 @@ public class CategoryController {
 		}
 		
 		if(Boolean.FALSE.equals(success)) {
-			return ResponseEntity.badRequest().body(new MessageResponse(error4GenericMessage));
+			return ResponseEntity.badRequest().body(new MessageResponse(editingTitle,error4GenericMessage));
 		}else {
-			return ResponseEntity.ok().body(new MessageResponse("Une categorie de publication a été modifiée!"));
+			return ResponseEntity.ok().body(new MessageResponse(editingTitle,"Une categorie de publication a été modifiée!"));
 		}	
 	}
 	

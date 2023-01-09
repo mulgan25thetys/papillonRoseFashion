@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ import prf.repositories.ViewsPostRepository;
 import prf.services.IPostServices;
 import prf.services.IUserServices;
 
+@CrossOrigin
 @RestController
 @RequestMapping("posts")
 public class PostController {
@@ -45,6 +47,7 @@ public class PostController {
 	private String genericMessage4Error = "Une erreur s'est produite veuillez ressayer!";
 	private String genericMessageError4ExistingPost = "Cette publication exist déja!";
 	private String genericMessageError4NonExistingPost = "Cette publication n'exist pas!";
+	private String genericMessageError4NonExistingCategory = "Cette categorie de publication n'exist pas!";
 	private String genericMessageError4Missing = "Cette requeste est incomplete";
 	private String genericMessage4NotLogin = "Veuillez vous connecter pour continuer!";
 			
@@ -231,6 +234,23 @@ public class PostController {
 			}
 			
 			return ResponseEntity.ok().body(postServe.getPost(id));
+		} catch (Exception e) {
+			log.debug(e);
+		}
+		return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4Error));
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
+	@GetMapping("get-posts-by-category/{id}")
+	@ResponseBody
+	public ResponseEntity<Object> getPostsByCategory(@PathVariable("id") Long id){
+		
+		try {
+			if(Boolean.FALSE.equals(cateRepo.existsById(id))) {
+				return ResponseEntity.badRequest().body(new MessageResponse(genericMessageError4NonExistingCategory));
+			}
+			
+			return ResponseEntity.ok().body(postRepo.getPostsByCategory(id));
 		} catch (Exception e) {
 			log.debug(e);
 		}
