@@ -24,12 +24,14 @@ public class CategoryServicesImpl implements ICategoryServices{
 		if(category.getIsPremium() == null) {
 			category.setIsPremium(false);
 		}
+		category.setSlug(category.getName().trim().replace(' ','-'));
 		category.setAddedAt(new Date());
 		return catRepo.save(category);
 	}
 
 	@Override
 	public Category editCategory(Category category) {
+		category.setSlug(category.getName().trim().replace(' ','-'));
 		category.setUpdatedAt(new Date());
 		return catRepo.save(category);
 	}

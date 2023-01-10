@@ -44,6 +44,7 @@ public class Category implements Serializable{/**
 	private Long id;
 	@NotBlank
 	private String name;
+	private String slug;
 	private Boolean isPremium;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date addedAt;

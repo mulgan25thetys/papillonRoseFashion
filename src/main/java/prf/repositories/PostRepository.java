@@ -16,4 +16,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	
 	@Query(value = "SELECT *FROM post WHERE category_id=:idCate",nativeQuery = true)
 	List<Post> getPostsByCategory(@Param("idCate") Long idCate);
+	
+	@Query(value = "SELECT *FROM post WHERE is_published=1 ORDER BY added_at DESC",nativeQuery = true)
+	List<Post> getPublishedPosts();
 }
+

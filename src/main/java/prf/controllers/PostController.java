@@ -4,9 +4,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -75,14 +72,13 @@ public class PostController {
 	@Autowired
 	ViewsPostRepository viewRepo;
 	
-	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
-	@GetMapping("/find-all-paging")
+	//@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
+	@GetMapping("/find-all-published")
 	@ResponseBody
-	public Page<Post> findAllPaging(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
-		Pageable paging = PageRequest.of(page, size);
-		Page<Post> listPosts = postServe.findAllPaging(paging);
+	public List<Post> findAllPublished(){
+		List<Post> listPosts = postRepo.getPublishedPosts();
 		try {
-			for (Post postP : listPosts.getContent()) {
+			for (Post postP : listPosts) {
 				for (Gallery gallery : postP.getGalleries()) {
 					String urlg = MvcUriComponentsBuilder
 					          .fromMethodName(FileController.class, "getFileForPosts", gallery.getName()).build().toString();
@@ -240,7 +236,7 @@ public class PostController {
 		return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4Error));
 	}
 	
-	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
+	//@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
 	@GetMapping("get-posts-by-category/{id}")
 	@ResponseBody
 	public ResponseEntity<Object> getPostsByCategory(@PathVariable("id") Long id){
