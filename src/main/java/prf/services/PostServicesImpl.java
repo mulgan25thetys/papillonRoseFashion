@@ -94,8 +94,16 @@ public class PostServicesImpl implements IPostServices {
 			post.setNumberShares(0);
 			post.setAddedAt(new Date());
 			
-			postRepo.save(post);
+			Post addedPost = postRepo.save(post);
 
+			Gallery gallery = new Gallery();
+			gallery.setIsDefault(true);
+			gallery.setHasShowed(true);
+			gallery.setName("post-default.jpg");
+			gallery.setAddedAt(new Date());
+			gallery.setPost(addedPost);
+			
+			gallRepo.save(gallery);
 			return 0;
 		}
 		return -1;
@@ -209,8 +217,22 @@ public class PostServicesImpl implements IPostServices {
 		Optional<Post> postOptional = postRepo.findById(id);
 		Boolean success =false;
 		if(postOptional.isPresent()) {
-		
-			for (Gallery gallery : postOptional.get().getGalleries()) {
+			success = this.deleteImagesByPost(postOptional.get());
+			
+			if(Boolean.TRUE.equals(success)) {
+				postRepo.delete(postOptional.get());
+				return 0;
+			}
+		}
+		return -1;
+	}
+	
+	private Boolean deleteImagesByPost(Post post) {
+		Boolean success = false;
+		if(post.getGalleries().isEmpty()) {
+			success = true;
+		}else {
+			for (Gallery gallery : post.getGalleries()) {
 				Path file =  Paths.get(ROOT_4_PATH).resolve(gallery.getName());
 				try {
 					if(Boolean.TRUE.equals(Files.deleteIfExists(file))) {
@@ -220,12 +242,8 @@ public class PostServicesImpl implements IPostServices {
 					log.debug(e);
 				}
 			}
-			if(Boolean.TRUE.equals(success)) {
-				postRepo.delete(postOptional.get());
-				return 0;
-			}
 		}
-		return -1;
+		return success;
 	}
 
 	//Find All posts with pagination

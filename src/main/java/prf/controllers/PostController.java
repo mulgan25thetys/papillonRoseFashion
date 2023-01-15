@@ -40,13 +40,13 @@ public class PostController {
 	
 	private static final Logger log = Logger.getLogger(PostController.class);
 	
-	private String success4Message = "L'operation a été bien realisée!";
-	private String genericMessage4Error = "Une erreur s'est produite veuillez ressayer!";
-	private String genericMessageError4ExistingPost = "Cette publication exist déja!";
-	private String genericMessageError4NonExistingPost = "Cette publication n'exist pas!";
-	private String genericMessageError4NonExistingCategory = "Cette categorie de publication n'exist pas!";
-	private String genericMessageError4Missing = "Cette requeste est incomplete";
-	private String genericMessage4NotLogin = "Veuillez vous connecter pour continuer!";
+	private String success4Message = "The operation was well done!";
+	private String genericMessage4Error = "An error has occurred please try again!";
+	private String genericMessageError4ExistingPost = "This publication already exists!";
+	private String genericMessageError4NonExistingPost = "This publication does not exist!";
+	private String genericMessageError4NonExistingCategory = "This category of publication does not exist!";
+	private String genericMessageError4Missing = "This request is incomplete!";
+	private String genericMessage4NotLogin = "Please login to continue!";
 			
 	@Autowired
 	CategoryRepository cateRepo;
@@ -256,7 +256,7 @@ public class PostController {
 	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN')")
 	@DeleteMapping("delete-post/{id}")
 	@ResponseBody
-	public ResponseEntity<Object> deletePost(@PathVariable("id") Long id){
+	public ResponseEntity<MessageResponse> deletePost(@PathVariable("id") Long id){
 		Boolean success=false;
 		try {
 			if(Boolean.FALSE.equals(postRepo.existsById(id))) {

@@ -141,6 +141,17 @@ public class CategoryController {
 		return ResponseEntity.ok().body(cateServe.getCategory(id));
 	}
 	
+	@GetMapping("/get-category-by-name/{name}")
+	@ResponseBody
+	public ResponseEntity<Object> getCategoryByName(@PathVariable("name") String name){
+		
+		if(Boolean.FALSE.equals(cateRepo.existsByName(name.trim()))) {
+			return ResponseEntity.badRequest().body(new MessageResponse(error4NonExistingCategoryMessage));
+		}
+		
+		return ResponseEntity.ok().body(cateRepo.getCategoryByName(name.trim()));
+	}
+	
 	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN')")
 	@DeleteMapping("/delete-category/{id}")
 	@ResponseBody
