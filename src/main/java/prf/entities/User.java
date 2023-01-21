@@ -51,6 +51,7 @@ public class User implements Serializable{
 	private Long id;
 	@Column(unique = true)
 	private Long uniqueId;
+	private String description;
 	@NotBlank
 	@Column(unique = true)
 	private String username;

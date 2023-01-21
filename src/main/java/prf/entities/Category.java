@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.Proxy;
@@ -50,6 +51,8 @@ public class Category implements Serializable{/**
 	private Date addedAt;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
+	@Transient
+	private Integer nbrPosts;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "category",fetch = FetchType.LAZY,cascade = CascadeType.ALL)

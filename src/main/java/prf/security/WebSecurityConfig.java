@@ -81,17 +81,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/").permitAll()
 			.antMatchers("/auth/**").permitAll()
 			.antMatchers("/roles/**").permitAll()
-			.antMatchers("/user/**").permitAll()
 			.antMatchers("/joints/**").permitAll()
-			.antMatchers("/categories/**").permitAll()
 			.antMatchers("/posts/**").permitAll()
-			.anyRequest().authenticated().and() 
-		      .formLogin() 
-		      .and() 
-		      .rememberMe() 
-		      .and().logout().logoutUrl("/auth/logout") 
-		      .logoutSuccessUrl("/").deleteCookies("remember-me");
-		
+			.antMatchers("/user/**").permitAll()
+			.antMatchers("/categories/**").permitAll()
+			.anyRequest().authenticated();
+			
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
 	}

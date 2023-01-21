@@ -67,6 +67,8 @@ public class Post implements Serializable{/**
 	private Date addedAt;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
+	@Transient
+	private String profileDefault;
 
 	@ManyToOne
 	private User author;

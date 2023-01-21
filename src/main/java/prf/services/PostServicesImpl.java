@@ -188,26 +188,36 @@ public class PostServicesImpl implements IPostServices {
 		
 		if(postOptional.isPresent()) {
 			Post post = postOptional.get();
-					for (Gallery gallery : post.getGalleries()) {
-						String url = MvcUriComponentsBuilder
-						          .fromMethodName(FileController.class, "getFileForPosts", gallery.getName()).build().toString();
-						gallery.setUrl(url);
-					}
-					String url = MvcUriComponentsBuilder
-					          .fromMethodName(FileController.class, "getFileForProfile", post.getAuthor().getProfile()).build().toString();
-					post.getAuthor().setProfileUrl(url);
 					
-					for(Comments comment : post.getComments()) {
-						String urlc = MvcUriComponentsBuilder
-						          .fromMethodName(FileController.class, "getFileForProfile", comment.getAuthor().getProfile()).build().toString();
-						comment.getAuthor().setProfileUrl(urlc);
-					}
-					post.setViews(viewRepo.getNbrViewsByPost(post.getId()));
-					post.setUnlikes(likesRepo.getNbrUnLikesByPost(post.getId()));
-					post.setLikes(likesRepo.getNbrLikesByPost(post.getId()));
-			return post;
+			return this.preparePostDetails(post);
 		}
 		return postOptional.orElse(null);
+	}
+	
+	private Post preparePostDetails(Post post) {
+		for (Gallery gallery : post.getGalleries()) {
+			String url = MvcUriComponentsBuilder
+			          .fromMethodName(FileController.class, "getFileForPosts", gallery.getName()).build().toString();
+			gallery.setUrl(url);
+			
+			if(Boolean.TRUE.equals(gallery.getIsDefault())) {
+				post.setProfileDefault(gallery.getUrl());
+			}
+		}
+		String url = MvcUriComponentsBuilder
+		          .fromMethodName(FileController.class, "getFileForProfile", post.getAuthor().getProfile()).build().toString();
+		post.getAuthor().setProfileUrl(url);
+		
+		for(Comments comment : post.getComments()) {
+			String urlc = MvcUriComponentsBuilder
+			          .fromMethodName(FileController.class, "getFileForProfile", comment.getAuthor().getProfile()).build().toString();
+			comment.getAuthor().setProfileUrl(urlc);
+		}
+		post.setViews(viewRepo.getNbrViewsByPost(post.getId()));
+		post.setUnlikes(likesRepo.getNbrUnLikesByPost(post.getId()));
+		post.setLikes(likesRepo.getNbrLikesByPost(post.getId()));
+		
+		return post;
 	}
 	
 	//Delete Post
@@ -303,28 +313,42 @@ public class PostServicesImpl implements IPostServices {
 		}
 	}
 	
+	private Post getPostBySlug(String slug) {
+		Optional<Post> postOptional = postRepo.getPostBySlug(slug);
+		
+		if(postOptional.isPresent()) {
+			return postOptional.get();
+		}
+		return postOptional.orElse(null);
+	}
+	
 	//View Post and update database
 
 	@Override
-	public Post viewsPost(Long idPost, User author) {
-		Optional<ViewsPost> viewsOptional = viewRepo.getViewsForPostByUser(author.getId(), idPost);
-		Post post = this.getPost(idPost);
-		ViewsPost view = new ViewsPost();
+	public Post viewsPost(String slug, User author) {
 		
-		if(Boolean.FALSE.equals(viewsOptional.isPresent())) {
+		Post post = this.getPostBySlug(slug);
+		if(post != null) {
+			Optional<ViewsPost> viewsOptional = viewRepo.getViewsForPostByUser(author.getId(), post.getId());
 			
-			view.setMyAuthor(author);
-			view.setMyPost(post);
-		}
-		else {
-			view = viewsOptional.get();
-		}
-	
-		view.setViewAt(new Date());
-		viewRepo.save(view);
+			ViewsPost view = new ViewsPost();
+			
+			if(Boolean.FALSE.equals(viewsOptional.isPresent())) {
+				
+				view.setMyAuthor(author);
+				view.setMyPost(post);
+			}
+			else {
+				view = viewsOptional.get();
+			}
 		
-		post.setViews(viewRepo.getNbrViewsByPost(post.getId()));
-		return post;
+			view.setViewAt(new Date());
+			viewRepo.save(view);
+			
+			post.setViews(viewRepo.getNbrViewsByPost(post.getId()));
+			return this.preparePostDetails(post);
+		}
+		return null;
 	}
 
 	@Override

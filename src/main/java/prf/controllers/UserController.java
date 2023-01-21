@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,7 @@ import prf.repositories.UserRepository;
 import prf.repositories.RoleRepository;
 import prf.services.IUserServices;
 
+@CrossOrigin()
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -45,6 +47,8 @@ public class UserController {
 	@Autowired
 	PasswordEncoder encoder;
 
+	
+	
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@GetMapping("/list-all")
 	@ResponseBody
@@ -66,6 +70,7 @@ public class UserController {
 		return roleRepository.getRoleByName(roleName);
 		
 	}
+	
 	
 	@PreAuthorize("hasAnyRole('ROLE_CLIENT','ROLE_AGENT','ROLE_ADMIN')")
 	@SuppressWarnings("all")

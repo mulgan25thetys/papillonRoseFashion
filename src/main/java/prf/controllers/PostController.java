@@ -1,5 +1,6 @@
 package prf.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import prf.entities.Comments;
 import prf.entities.Gallery;
 import prf.entities.Post;
+import prf.entities.User;
 import prf.payload.response.MessageResponse;
 import prf.repositories.CategoryRepository;
 import prf.repositories.GalleryRepository;
@@ -72,17 +74,37 @@ public class PostController {
 	@Autowired
 	ViewsPostRepository viewRepo;
 	
-	//@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
+	@GetMapping("/get-admin-owner")
+	@ResponseBody 
+	public ResponseEntity<Object> getOwner() {
+		User owner =  userRepo.findAdminOwner();
+		String url = MvcUriComponentsBuilder
+		          .fromMethodName(FileController.class, "getFileForProfile", owner.getProfile()).build().toString();
+		owner.setProfile(url);
+		return ResponseEntity.ok().body(owner);
+	}
+	
 	@GetMapping("/find-all-published")
 	@ResponseBody
-	public List<Post> findAllPublished(){
-		List<Post> listPosts = postRepo.getPublishedPosts();
+	public List<Post> findAllPublished(@RequestParam("recents") String recent){
+		List<Post> listPosts = new ArrayList<>();
+		
+		if(recent !=null && recent.equals("yes")) {
+			 listPosts = postRepo.getRecentsPosts();
+		}else {
+		  listPosts = postRepo.getPublishedPosts();
+		}
+		
 		try {
 			for (Post postP : listPosts) {
 				for (Gallery gallery : postP.getGalleries()) {
 					String urlg = MvcUriComponentsBuilder
 					          .fromMethodName(FileController.class, "getFileForPosts", gallery.getName()).build().toString();
 					gallery.setUrl(urlg);
+					
+					if(Boolean.TRUE.equals(gallery.getIsDefault())) {
+						postP.setProfileDefault(gallery.getUrl());
+					}
 				}
 				
 				String urlp = MvcUriComponentsBuilder
@@ -116,6 +138,10 @@ public class PostController {
 					String url = MvcUriComponentsBuilder
 					          .fromMethodName(FileController.class, "getFileForPosts", gallery.getName()).build().toString();
 					gallery.setUrl(url);
+					
+					if(Boolean.TRUE.equals(gallery.getIsDefault())) {
+						post.setProfileDefault(gallery.getUrl());
+					}
 				}
 				
 				String url = MvcUriComponentsBuilder
@@ -301,11 +327,17 @@ public class PostController {
 	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN','ROLE_CLIENT')")
 	@GetMapping("views")
 	@ResponseBody
-	public ResponseEntity<Object> viewsPost(@RequestParam("id") Long id){
+	public ResponseEntity<Object> viewsPost(@RequestParam("slug") String slug){
 		
 		try {
 			if(userServe.getAuthenticatedUSer() != null) {
-				return ResponseEntity.ok().body(postServe.viewsPost(id, userServe.getAuthenticatedUSer()));
+				Post post = postServe.viewsPost(slug, userServe.getAuthenticatedUSer());
+				
+				if(post !=null) {
+					return ResponseEntity.ok().body(post);
+				}else {
+					return ResponseEntity.badRequest().body(new MessageResponse(genericMessageError4NonExistingPost));
+				}
 			}else {
 				return ResponseEntity.badRequest().body(new MessageResponse(genericMessage4NotLogin));
 			}

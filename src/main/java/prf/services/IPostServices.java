@@ -24,7 +24,7 @@ public interface IPostServices {
 	
 	void likesPost(Long idPost,int value,User author);
 	
-	Post viewsPost(Long idPost,User author);
+	Post viewsPost(String slug,User author);
 	
 	Comments commentPost(Long idPost,User author,Comments comment);
 }

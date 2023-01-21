@@ -69,6 +69,15 @@ public class CategoryController {
 		return cateRepo.findAll();
 	}
 	
+	@GetMapping("/get-categories")
+	@ResponseBody
+	public List<Category> findAllCategories(){
+		List<Category> categories = cateRepo.findAll();
+		for (Category category : categories) {
+			category.setNbrPosts(category.getPosts().size());
+		}
+		return categories;
+	}
 	
 	@SuppressWarnings("all")
 	@PreAuthorize("hasAnyRole('ROLE_AGENT','ROLE_ADMIN')")

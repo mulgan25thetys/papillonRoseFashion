@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import prf.entities.Post;
 import prf.entities.ViewsPost;
 
 @Repository
@@ -17,4 +18,5 @@ public interface ViewsPostRepository extends JpaRepository<ViewsPost, Long> {
 	
 	@Query(value = "SELECT COUNT(*) FROM views_post WHERE my_post_id=:idPost",nativeQuery = true)
 	Integer getNbrViewsByPost(@Param("idPost") Long idPost);
+	
 }

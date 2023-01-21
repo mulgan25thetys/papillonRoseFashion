@@ -16,6 +16,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Query(value = "SELECT * FROM user WHERE email =:value OR username=:value",nativeQuery = true)
 	User findByUsernameOrEmail(@Param("value") String value);
 	
+	@Query(value = "SELECT * FROM user u inner join role r on u.role_id=r.id WHERE r.name ='ROLE_ADMIN'",nativeQuery = true)
+	User findAdminOwner();
+	
 	Boolean existsByUsername(String username);
 	Boolean existsByEmail(String email);
 
